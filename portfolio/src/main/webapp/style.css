@@ -7,3 +7,28 @@
 #greeting-container {
   margin-top: 20px;
 }
+
+.title-image {
+    max-width: 100%;
+}
+
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-around;
+}
+
+.image-gallery a {
+    min-width: 100px;
+    max-width: 25%;
+    height: auto;
+}
+
+.image-gallery img {
+    width: 100%;
+    height: auto;
+}
+
+.image-gallery img:hover {
+    opacity: 80%;
+}
