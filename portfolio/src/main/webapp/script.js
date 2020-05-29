@@ -31,12 +31,14 @@ function addRandomGreeting() {
  * Opens side menu
  */
 function openSideNav() {
-    document.getElementById('navigation-bar').style.display = "none";
+    document.getElementById('navigation-bar').style.display = "inline-flex";
+    document.getElementById('navigation-tab').style.display = "hidden";
 }
 
 /**
  * Closes side menu
  */
 function closeSideNav() {
-    document.getElementById('navigation-bar').style.display = "flex";
+    document.getElementById('navigation-bar').style.display = "none";
+    document.getElementById('navigation-tab').style.display = "inline-block";
 }

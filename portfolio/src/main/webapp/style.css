@@ -11,7 +11,7 @@ html, body {
 }
 
 #navigation-bar {
-    display: flex;
+    display: none;
     flex-direction: column;
     position: fixed;
     top: 0;
@@ -20,6 +20,7 @@ html, body {
     height: 100%;
     width: 20vw;
     background-color: DarkCyan;
+    transition: 1s;
 }
 
 #navigation-bar a {
@@ -29,16 +30,40 @@ html, body {
     font-size: 2vw;
 }
 
-#navigation-bar a:link a:visited {
+#navigation-bar a:link, a:visited {
     color: WhiteSmoke;
 }
 
 #navigation-bar a:hover {
-    color: White;
+    opacity: 60%;
 }
 
 #navigation-bar a:active {
     color: WhiteSmoke;
+}
+
+#nav-close {
+    border: none;
+    background-color: transparent;
+    color: WhiteSmoke;
+    text-align: right;
+    font-size: 3vw;
+    right-padding: 10px;
+}
+
+#navigation-tab {
+    display: inline-box;
+    padding: 1vw;
+    width: 3vw;
+    align-content: center;
+    transition: 1s;
+}
+
+.nav-line {
+    width: 2vw;
+    height: 0.1vw;
+    background-color: Black;
+    margin: 0.3vw 0;
 }
 
 #greeting-container {
