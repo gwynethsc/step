@@ -60,7 +60,7 @@ button:focus, a:focus {
 }
 
 #navigation-tab {
-    display: inline-box;
+    display: inline-block;
     padding: 1vw;
     width: 3vw;
     align-content: center;
