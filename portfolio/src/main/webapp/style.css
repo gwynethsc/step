@@ -1,3 +1,10 @@
+:root {
+    --color-background-primary: #222;
+    --color-text-primary: WhiteSmoke;
+    --color-accent-a: DarkCyan;
+    --color-accent-b: Crimson;
+}
+
 body {
     background-color: #222;
     color: WhiteSmoke;
