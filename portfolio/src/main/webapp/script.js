@@ -26,3 +26,17 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
+
+/**
+ * Opens side menu
+ */
+function openSideNav() {
+    document.getElementById('navigation-bar').style.display = "none";
+}
+
+/**
+ * Closes side menu
+ */
+function closeSideNav() {
+    document.getElementById('navigation-bar').style.display = "flex";
+}
