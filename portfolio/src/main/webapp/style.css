@@ -6,15 +6,15 @@
 }
 
 body {
-    background-color: #222;
-    color: WhiteSmoke;
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
     font-family: Verdana, Geneva, sans-serif;
 }
 
 #content {
   margin-left: auto;
   margin-right: auto;
-  width: 650px;
+  width: 50vw;
 }
 
 #greeting-container {
