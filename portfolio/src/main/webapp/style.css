@@ -3,6 +3,11 @@ html, body {
     margin: 0;
 }
 
+button:focus, a:focus {
+    outline: none;
+    opacity: 60%;
+}
+
 #content {
   margin-left: auto;
   margin-right: auto;
@@ -51,7 +56,7 @@ html, body {
     color: WhiteSmoke;
     text-align: right;
     font-size: 3vw;
-    right-padding: 10px;
+    padding-right: 10px;
 }
 
 #navigation-tab {
