@@ -31,14 +31,18 @@ function addRandomGreeting() {
  * Opens side menu
  */
 function openSideNav() {
-    document.getElementById('navigation-bar').style.display = "inline-flex";
-    document.getElementById('navigation-tab').style.display = "hidden";
+    var navBar = document.getElementById("navigation-bar");
+    var openNavTab = document.getElementById("navigation-tab");
+    navBar.classList.remove("off-screen");
+    openNavTab.classList.add("hidden");
 }
 
 /**
  * Closes side menu
  */
 function closeSideNav() {
-    document.getElementById('navigation-bar').style.display = "none";
-    document.getElementById('navigation-tab').style.display = "inline-block";
+    var navBar = document.getElementById("navigation-bar");
+    var openNavTab = document.getElementById("navigation-tab");
+    navBar.classList.add("off-screen");
+    openNavTab.classList.remove("hidden");
 }
