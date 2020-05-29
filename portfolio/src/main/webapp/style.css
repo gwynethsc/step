@@ -23,6 +23,15 @@ button:focus, a:focus {
     opacity: 60%;
 }
 
+.landing-title {
+    top: 20%;
+    text-align: center;
+}
+
+.landing-title h1 {
+    font-size: 4em;
+}
+
 #content {
     margin-left: auto;
     margin-right: auto;
@@ -85,7 +94,7 @@ button:focus, a:focus {
 .nav-line {
     width: 2vw;
     height: 0.1vw;
-    background-color: Black;
+    background-color: var(--color-text-primary);
     margin: 0.3vw 0;
 }
 
