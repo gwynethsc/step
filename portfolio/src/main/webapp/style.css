@@ -18,6 +18,15 @@ body {
     font-family: Verdana, Geneva, sans-serif;
 }
 
+button {
+    font-family: inherit;
+    color: inherit;
+    background-color: inherit;
+    border: 1px solid var(--color-accent-b);
+    padding: 8px;
+    margin: 8px;
+}
+
 button:focus, a:focus {
     outline: none;
     opacity: 60%;

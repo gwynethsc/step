@@ -46,3 +46,14 @@ function closeSideNav() {
     navBar.classList.add("off-screen");
     openNavTab.classList.remove("hidden");
 }
+
+/**
+ * fetches a static greeting from the server
+ */
+function addGreeting() {
+    console.log('fetching greeting');
+
+    fetch('/data').then(response => response.text()).then(quote => {
+        document.getElementById('data-container').innerText = quote;
+    });
+}
