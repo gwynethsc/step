@@ -59,7 +59,7 @@ button:focus, a:focus {
     padding: 2vh;
     text-decoration: none;
     text-align: center;
-    font-size: 2vw;
+    font-size: 1.5vw;
 }
 
 #navigation-bar a:link, a:visited {
@@ -123,7 +123,7 @@ button:focus, a:focus {
     flex-direction: column;
     min-width: 50px;
     max-width: 50%;
-    padding: 3px;
+    padding: 2px;
 }
 
 .image-gallery-column img {

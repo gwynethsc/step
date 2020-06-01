@@ -4,9 +4,22 @@
     <meta charset="UTF-8">
     <title>Cats</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="effects.css">
     <script src="script.js"></script>
   </head>
   <body>
+    <div id="navigation-bar" class="left-aligned off-screen">
+        <button id="nav-close" onclick="closeSideNav()">&times;</button>
+        <a href="index.html">Home</a>
+        <a href="cats.html">Cats</a>
+        <a href="pumpkins.html">Pumpkin Carvings</a>
+    </div>
+    <div id="navigation-tab" onclick="openSideNav()">
+        <div class="nav-line"></div>
+        <div class="nav-line"></div>
+        <div class="nav-line"></div>
+    </div>
+
     <div id="content">
         <h1>meow.</h1>
         <img class="title-image" src="/images/cats/siblings.jpg">
@@ -25,7 +38,7 @@
             <div class="image-gallery-column">
                 <a href="/images/cats/siblings.jpg"><img src="/images/cats/siblings.jpg"></a>
                 <a href="/images/cats/sprawl.jpg"><img src="/images/cats/sprawl.jpg"></a>
-                <a href="/images/cats/spycats.jpg"><img src="/images/cats/spycats1.jpg"></a>
+                <a href="/images/cats/spycats1.jpg"><img src="/images/cats/spycats1.jpg"></a>
             </div>
             <div class="image-gallery-column">
                 <a href="/images/cats/spycats2.jpg"><img src="/images/cats/spycats2.jpg"></a>
