@@ -26,3 +26,23 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
+
+/**
+ * Opens side menu
+ */
+function openSideNav() {
+    var navBar = document.getElementById("navigation-bar");
+    var openNavTab = document.getElementById("navigation-tab");
+    navBar.classList.remove("off-screen");
+    openNavTab.classList.add("hidden");
+}
+
+/**
+ * Closes side menu
+ */
+function closeSideNav() {
+    var navBar = document.getElementById("navigation-bar");
+    var openNavTab = document.getElementById("navigation-tab");
+    navBar.classList.add("off-screen");
+    openNavTab.classList.remove("hidden");
+}
