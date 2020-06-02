@@ -48,7 +48,8 @@ function closeSideNav() {
 }
 
 /**
- * Fetches a list of static messages from the server
+ * Fetches a list of messages from the server and adds each in its
+ * own paragraph in the page
  */
 function addGreeting() {
     console.log('fetching messages');
