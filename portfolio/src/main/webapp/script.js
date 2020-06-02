@@ -48,7 +48,7 @@ function closeSideNav() {
 }
 
 /**
- * fetches a static greeting from the server
+ * Fetches a list of static messages from the server
  */
 function addGreeting() {
     console.log('fetching messages');
@@ -56,6 +56,8 @@ function addGreeting() {
     fetch('/data').then(response => response.json()).then(messages => {
         console.log(messages);
         const messageElement = document.getElementById('data-container');
+        messageElement.innerText = "";
+
         let message;
         for (let i = 0; i < messages.length; i++) {
             message = document.createElement('p');
