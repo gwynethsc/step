@@ -51,9 +51,16 @@ function closeSideNav() {
  * fetches a static greeting from the server
  */
 function addGreeting() {
-    console.log('fetching greeting');
+    console.log('fetching messages');
 
-    fetch('/data').then(response => response.text()).then(quote => {
-        document.getElementById('data-container').innerText = quote;
+    fetch('/data').then(response => response.json()).then(messages => {
+        console.log(messages);
+        const messageElement = document.getElementById('data-container');
+        let message;
+        for (let i = 0; i < messages.length; i++) {
+            message = document.createElement('p');
+            message.innerText = messages[i];
+            messageElement.appendChild(message);
+        }   
     });
 }
