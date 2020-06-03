@@ -36,18 +36,22 @@ import java.util.List;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+    // List of Datastore types (_T) and properties (_P) used
+    private static final String COMMENT_T = "Comment";
+    private static final String TIMESTAMP_P = "timestamp";
+    private static final String TEXT_P = "text";
+
     private static final Gson gson = new Gson();
+    private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
-
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Query query = new Query(COMMENT_T).addSort(TIMESTAMP_P, SortDirection.DESCENDING);
         PreparedQuery results = datastore.prepare(query);
 
         List<String> comments = new ArrayList<String>();
         for (Entity entity : results.asIterable()) {
-            String comment = (String) entity.getProperty("text");
+            String comment = (String) entity.getProperty(TEXT_P);
             comments.add(comment);
         }
 
@@ -62,11 +66,10 @@ public class DataServlet extends HttpServlet {
         String comment = request.getParameter("comment-box");
         long timestamp = System.currentTimeMillis();
 
-        Entity commentEntity = new Entity("Comment");
-        commentEntity.setProperty("timestamp", timestamp);
-        commentEntity.setProperty("text", comment);
+        Entity commentEntity = new Entity(COMMENT_T);
+        commentEntity.setProperty(TIMESTAMP_P, timestamp);
+        commentEntity.setProperty(TEXT_P, comment);
 
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
 
         // Redirect back to main page
