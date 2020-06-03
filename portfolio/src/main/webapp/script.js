@@ -56,7 +56,9 @@ function loadComments() {
     fetch('/data').then(response => response.json()).then(messages => {
         console.log(messages);
         const messageElement = document.getElementById("comment-container");
-        messageElement.innerText = "";
+        while (messageElement.firstChild) {
+            messageElement.removeChild(messageElement.firstChild);
+        }
 
         let message;
         for (let i = 0; i < messages.length; i++) {
