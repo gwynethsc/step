@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="effects.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="loadComments()">
     <div id="navigation-bar" class="left-aligned off-screen">
         <button id="nav-close" onclick="closeSideNav()">&times;</button>
         <a href="index.html">Home</a>
@@ -22,8 +22,16 @@
     <div id="content" class="landing-title">
       <h1>Gwyneth Chen</h1>
       <p>I am a human, probably. </p>
-      <button onclick="addGreeting()">Press me!</button>
-      <div id="data-container"></div>
+
+      <section>
+          <form action="/data" method="POST">
+              <h2>Suggestions &amp; Comments</h2>
+              <textarea name="comment-box" cols=50 placeholder="Leave comment or suggestion, or just say hi!"></textarea>
+              <button type="submit">Submit</button>
+          </form>
+          <button id="view-comments" onclick="toggleComments()">View Comments</button>
+          <div id="comment-container" class="gone"></div>
+      </section>
     </div>
   </body>
 </html>

@@ -18,6 +18,10 @@ body {
     font-family: Verdana, Geneva, sans-serif;
 }
 
+section {
+    margin-top: 10vh;
+}
+
 button {
     font-family: inherit;
     color: inherit;
@@ -30,6 +34,23 @@ button {
 button:focus, a:focus {
     outline: none;
     opacity: 60%;
+}
+
+textarea {
+    width: 100%;
+    resize: vertical;
+    background-color: inherit;
+    color: inherit;
+    border: 1px solid var(--color-accent-a);
+    opacity: 80%;
+    font-family: inherit;
+    padding: 5px;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--color-text-primary);
+    opacity: 100%;
 }
 
 .landing-title {
@@ -107,10 +128,6 @@ button:focus, a:focus {
     margin: 0.3vw 0;
 }
 
-#greeting-container {
-  margin-top: 20px;
-}
-
 .title-image {
     max-width: 100%;
 }
@@ -138,4 +155,11 @@ button:focus, a:focus {
 .image-gallery-column img {
     width: 100%;
     height: auto;
+}
+
+p.comment {
+    text-align: left;
+    font-size: 0.8em;
+    border-top: 1px solid var(--color-accent-a);
+    padding: 10px 0;
 }

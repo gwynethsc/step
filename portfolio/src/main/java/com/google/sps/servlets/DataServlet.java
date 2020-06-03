@@ -20,21 +20,33 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/**
+ * Servlet that stores and returns visitor comments
+ */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
     private static final Gson gson = new Gson();
-    private List<String> messages = Arrays.asList("alfa", "bravo", "charlie");
+    private static final ArrayList<String> comments = new ArrayList<String>();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String json = gson.toJson(messages);
+        String json = gson.toJson(comments);
         response.setContentType("application/json");
         response.getWriter().println(json);
+    }
+
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String comment = request.getParameter("comment-box");
+        comments.add(comment);
+
+        // Redirect back to main page
+        response.sendRedirect("/index.html");
     }
 }
