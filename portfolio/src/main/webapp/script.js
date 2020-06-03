@@ -48,22 +48,37 @@ function closeSideNav() {
 }
 
 /**
- * Fetches a list of messages from the server and adds each in its
- * own paragraph in the page
+ * Fetches a list of comments from the server and adds each to the page
  */
-function addGreeting() {
+function loadComments() {
     console.log('fetching messages');
 
     fetch('/data').then(response => response.json()).then(messages => {
         console.log(messages);
-        const messageElement = document.getElementById('data-container');
+        const messageElement = document.getElementById("comment-container");
         messageElement.innerText = "";
 
         let message;
         for (let i = 0; i < messages.length; i++) {
             message = document.createElement('p');
+            message.classList.add("comment");
             message.innerText = messages[i];
             messageElement.appendChild(message);
         }   
     });
+}
+
+/**
+ * Toggles comment visibility
+ */
+function toggleComments() {
+    let comments = document.getElementById("comment-container");
+    comments.classList.toggle("gone");
+
+    let view = document.getElementById("view-comments");
+    if (view.innerText == "View Comments") {
+        view.innerText = "Hide Comments";
+    } else {
+        view.innerText = "View Comments";
+    }
 }
