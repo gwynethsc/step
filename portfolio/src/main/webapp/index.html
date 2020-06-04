@@ -32,8 +32,8 @@
           <div id="comment-viewing-container">
               <button id="view-hide-comments" onclick="toggleComments()">View Comments</button>
               <form action="/data" method="POST">
-                  <label for="n-comments">Number of comments to display:</label>
-                  <select id="n-comments" name="n-comments" onchange="">
+                  <label for="n-comments">Maximum number of comments to display:</label>
+                  <select id="n-comments" name="n-comments" onchange="loadComments()">
                       <option>5</option>
                       <option>10</option>
                       <option>20</option>
