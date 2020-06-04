@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+var n_comments = 5;
+
 /**
  * Adds a random greeting to the page.
  */
@@ -51,23 +53,32 @@ function closeSideNav() {
  * Fetches a list of comments from the server and adds each to the page
  */
 function loadComments() {
-    console.log('fetching messages');
+    console.log("fetching comments");
 
-    fetch('/data').then(response => response.json()).then(messages => {
-        console.log(messages);
-        const messageElement = document.getElementById("comment-container");
-        while (messageElement.firstChild) {
-            messageElement.removeChild(messageElement.firstChild);
-        }
-
-        let message;
-        for (let i = 0; i < messages.length; i++) {
-            message = document.createElement('p');
-            message.classList.add("comment");
-            message.innerText = messages[i];
-            messageElement.appendChild(message);
-        }   
+    n_comments = document.getElementById("n-comments").value;
+    console.log(n_comments);
+    fetch("/data?n-comments=" + n_comments).then(response => response.json()).then(messages => {
+        console.log("received data: " + messages);
+        addComments(messages);
     });
+}
+
+/** 
+ * Adds comments to the page 
+ */
+function addComments(messages) {
+    const messageElement = document.getElementById("comment-container");
+    while (messageElement.firstChild) {
+        messageElement.removeChild(messageElement.firstChild);
+    }
+
+    let message;
+    for (let i = 0; i < messages.length; i++) {
+        message = document.createElement('p');
+        message.classList.add("comment");
+        message.innerText = messages[i];
+        messageElement.appendChild(message);
+    }   
 }
 
 /**
@@ -77,7 +88,7 @@ function toggleComments() {
     let comments = document.getElementById("comment-container");
     comments.classList.toggle("gone");
 
-    let view = document.getElementById("view-comments");
+    let view = document.getElementById("view-hide-comments");
     if (view.innerText == "View Comments") {
         view.innerText = "Hide Comments";
     } else {

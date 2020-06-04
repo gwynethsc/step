@@ -24,12 +24,23 @@
       <p>I am a human, probably. </p>
 
       <section>
-          <form action="/data" method="POST">
+          <form id="comment-form" action="/data" method="POST">
               <h2>Suggestions &amp; Comments</h2>
               <textarea name="comment-box" cols=50 placeholder="Leave comment or suggestion, or just say hi!"></textarea>
               <button type="submit">Submit</button>
           </form>
-          <button id="view-comments" onclick="toggleComments()">View Comments</button>
+          <div id="comment-viewing-container">
+              <button id="view-hide-comments" onclick="toggleComments()">View Comments</button>
+              <form action="/data" method="POST">
+                  <label for="n-comments">Number of comments to display:</label>
+                  <select id="n-comments" name="n-comments" onchange="">
+                      <option>5</option>
+                      <option>10</option>
+                      <option>20</option>
+                      <option>50</option>
+                  </select>
+              </form>
+          </div>
           <div id="comment-container" class="gone"></div>
       </section>
     </div>
