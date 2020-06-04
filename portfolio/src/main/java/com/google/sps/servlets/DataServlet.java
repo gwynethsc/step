@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.sps.data.Comment;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -51,16 +52,20 @@ public class DataServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Query query = new Query(COMMENT_T).addSort(TIMESTAMP_P, SortDirection.DESCENDING);
         PreparedQuery results = datastore.prepare(query);
-        int n_comments;
+        int num_comments;
         try {
-            n_comments = Integer.parseInt(request.getParameter("n-comments"));
+            num_comments = Integer.parseInt(request.getParameter("num-comments"));
         } catch (NumberFormatException e) {
-            n_comments = N_COMMENTS_DEFAULT;
+            num_comments = N_COMMENTS_DEFAULT;
         }
 
-        List<String> comments = new ArrayList<String>();
-        for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(n_comments))) {
-            String comment = (String) entity.getProperty(TEXT_P);
+        List<Comment> comments = new ArrayList<Comment>();
+        for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(num_comments))) {
+            long id = (long) entity.getKey().getId();
+            long timestamp = (long) entity.getProperty(TIMESTAMP_P);
+            String text = (String) entity.getProperty(TEXT_P);
+
+            Comment comment = new Comment(id, timestamp, text);
             comments.add(comment);
         }
 

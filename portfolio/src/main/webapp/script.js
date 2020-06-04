@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var n_comments = 5;
+var num_comments = 5;
 
 /**
  * Adds a random greeting to the page.
@@ -55,29 +55,29 @@ function closeSideNav() {
 function loadComments() {
     console.log("fetching comments");
 
-    n_comments = document.getElementById("n-comments").value;
-    console.log(n_comments);
-    fetch("/data?n-comments=" + n_comments).then(response => response.json()).then(messages => {
-        console.log("received data: " + messages);
-        addComments(messages);
+    num_comments = document.getElementById("num-comments").value;
+    console.log(num_comments);
+    fetch("/data?num-comments=" + num_comments).then(response => response.json()).then(commentList => {
+        console.log("received data: " + commentList);
+        addComments(commentList);
     });
 }
 
 /** 
  * Adds comments to the page 
  */
-function addComments(messages) {
-    const messageElement = document.getElementById("comment-container");
-    while (messageElement.firstChild) {
-        messageElement.removeChild(messageElement.firstChild);
+function addComments(commentList) {
+    const commentListElement = document.getElementById("comment-container");
+    while (commentListElement.firstChild) {
+        commentListElement.removeChild(commentListElement.firstChild);
     }
 
-    let message;
-    for (let i = 0; i < messages.length; i++) {
-        message = document.createElement('p');
-        message.classList.add("comment");
-        message.innerText = messages[i];
-        messageElement.appendChild(message);
+    let commentElement;
+    for (let i = 0; i < commentList.length; i++) {
+        commentElement = document.createElement('p');
+        commentElement.classList.add("comment");
+        commentElement.innerText = commentList[i].text;
+        commentListElement.appendChild(commentElement);
     }   
 }
 
