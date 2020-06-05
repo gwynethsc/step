@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.sps.data.Comment;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -61,11 +62,11 @@ public class DataServlet extends HttpServlet {
 
         List<Comment> comments = new ArrayList<Comment>();
         for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(num_comments))) {
-            long id = (long) entity.getKey().getId();
+            String key = KeyFactory.keyToString(entity.getKey());
             long timestamp = (long) entity.getProperty(TIMESTAMP_P);
             String text = (String) entity.getProperty(TEXT_P);
 
-            Comment comment = new Comment(id, timestamp, text);
+            Comment comment = new Comment(key, timestamp, text);
             comments.add(comment);
         }
 
