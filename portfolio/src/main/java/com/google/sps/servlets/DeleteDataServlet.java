@@ -27,16 +27,31 @@ import java.util.Map;
 @WebServlet("/delete-data")
 public class DeleteDataServlet extends HttpServlet {
 
+    private static final String COMMENT_T = "Comment";
+    private static final String TIMESTAMP_P = "timestamp";
+
     private static final Gson gson = new Gson();
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Map<String, String> map = gson.fromJson(request.getReader(), Map.class);
-        String keyString = map.get("delete-key");
-        Key key = KeyFactory.stringToKey(keyString);
-
-        datastore.delete(key);
+        String deleteStyle = map.get("delete-style");
+        if (deleteStyle.equals("single")) {
+            String keyString = map.get("delete-key");
+            Key key = KeyFactory.stringToKey(keyString);
+            
+            datastore.delete(key);
+        } else { // deleteStyle.equals("all") == true
+            Query query = new Query(COMMENT_T).addSort(TIMESTAMP_P, SortDirection.ASCENDING);
+            PreparedQuery results = datastore.prepare(query);
+            List<Key> keys = new ArrayList<Key>();
+            for (Entity entity : results.asIterable()) {
+                keys.add(entity.getKey());
+            }
+            
+            datastore.delete(keys);
+        }
     }
 }
 
