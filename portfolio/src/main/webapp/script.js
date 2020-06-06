@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var num_comments = 5;
+var maxNumComments = 5;
 
 /**
  * Adds a random greeting to the page.
@@ -55,9 +55,9 @@ function closeSideNav() {
 function loadComments() {
     console.log("fetching comments");
 
-    num_comments = document.getElementById("num-comments").value;
-    console.log(num_comments);
-    fetch("/data?num-comments=" + num_comments).then(response => response.json()).then(commentList => {
+    maxNumComments = document.getElementById("num-comments").value;
+    console.log(maxNumComments);
+    fetch("/data?num-comments=" + maxNumComments).then(response => response.json()).then(commentList => {
         console.log("received data: " + commentList);
         addComments(commentList);
     });
