@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+var maxNumComments = 5;
+
 /**
  * Adds a random greeting to the page.
  */
@@ -51,33 +53,105 @@ function closeSideNav() {
  * Fetches a list of comments from the server and adds each to the page
  */
 function loadComments() {
-    console.log('fetching messages');
+    console.log("fetching comments");
 
-    fetch('/data').then(response => response.json()).then(messages => {
-        console.log(messages);
-        const messageElement = document.getElementById("comment-container");
-        while (messageElement.firstChild) {
-            messageElement.removeChild(messageElement.firstChild);
-        }
-
-        let message;
-        for (let i = 0; i < messages.length; i++) {
-            message = document.createElement('p');
-            message.classList.add("comment");
-            message.innerText = messages[i];
-            messageElement.appendChild(message);
-        }   
+    maxNumComments = document.getElementById("num-comments").value;
+    console.log(maxNumComments);
+    fetch("/data?num-comments=" + maxNumComments).then(response => response.json()).then(commentList => {
+        console.log("received data: " + commentList);
+        addComments(commentList);
     });
+}
+
+/** 
+ * Adds comments to the page 
+ *
+ * @param commentList an array of objects, each with a text field
+ */
+function addComments(commentList) {
+    const commentListElement = document.getElementById("comment-list-container");
+    while (commentListElement.firstChild) {
+        commentListElement.removeChild(commentListElement.firstChild);
+    }
+
+    for (comment of commentList) {
+        commentListElement.appendChild(createCommentElement(comment));
+    }   
+}
+
+/**
+ * Creates a single delete-able comment element
+ *
+ * @param comment a comment object with id and text fields
+ * @return a comment div to be added to a list of comments
+ */
+function createCommentElement(comment) {
+    let commentElement = document.createElement('div');
+    commentElement.classList.add("comment");
+    
+    let commentText = document.createElement('p');
+    commentText.innerText = comment.text;
+    commentElement.appendChild(commentText);
+
+    let deleteButton = document.createElement('button');
+    deleteButton.id = comment.key;
+    deleteButton.innerText = "Delete";
+    deleteButton.addEventListener('click', deleteComment);
+    commentElement.appendChild(deleteButton);
+
+    return commentElement;
+}
+
+/**
+ * Deletes a comment whose delete button has been clicked
+ */
+function deleteComment(evt) {
+    let key = evt.currentTarget.id;
+    console.log("deleting comment with key: " + key);
+
+    const data = {
+        "delete-style": "single",
+        "delete-key": key
+    }
+    
+    sendDeletePost(data);
+}
+
+/**
+ * deletes all comments permanently
+ */
+function deleteAllComments() {
+    console.log("deleting all comments");
+
+    const data = {
+        "delete-style": "all",
+    }
+    
+    sendDeletePost(data);
+}
+
+/**
+ * Given a JSON structure, sends a POST request for a particular delete 
+ * comment operation
+ */
+function sendDeletePost(json) {
+    fetch('/delete-data', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(json),
+    }).then(response => loadComments());
 }
 
 /**
  * Toggles comment visibility
  */
 function toggleComments() {
-    let comments = document.getElementById("comment-container");
+    let comments = document.getElementById("comment-list-container");
     comments.classList.toggle("gone");
 
-    let view = document.getElementById("view-comments");
+    let view = document.getElementById("view-hide-comments");
     if (view.innerText == "View Comments") {
         view.innerText = "Hide Comments";
     } else {

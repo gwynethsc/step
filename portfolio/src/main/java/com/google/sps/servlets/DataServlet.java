@@ -18,8 +18,11 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.sps.data.Comment;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,22 +39,31 @@ import java.util.List;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-    // List of Datastore types (_T) and properties (_P) used
-    private static final String COMMENT_T = "Comment";
-    private static final String TIMESTAMP_P = "timestamp";
-    private static final String TEXT_P = "text";
+    private static final int NUM_COMMENTS_DEFAULT = 1;
+    private static final String PARAM_NUM_COMMENTS = "num-comments";
+    private static final String PARAM_COMMENT_BOX = "comment-box";
 
     private static final Gson gson = new Gson();
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Query query = new Query(COMMENT_T).addSort(TIMESTAMP_P, SortDirection.DESCENDING);
+        Query query = new Query(Comment.KIND).addSort(Comment.PROPERTY_TIMESTAMP, SortDirection.DESCENDING);
         PreparedQuery results = datastore.prepare(query);
+        int maxNumComments;
+        try {
+            maxNumComments = Integer.parseInt(request.getParameter(PARAM_NUM_COMMENTS));
+        } catch (NumberFormatException e) {
+            maxNumComments = NUM_COMMENTS_DEFAULT;
+        }
 
-        List<String> comments = new ArrayList<String>();
-        for (Entity entity : results.asIterable()) {
-            String comment = (String) entity.getProperty(TEXT_P);
+        List<Comment> comments = new ArrayList<Comment>();
+        for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(maxNumComments))) {
+            String key = KeyFactory.keyToString(entity.getKey());
+            long timestamp = (long) entity.getProperty(Comment.PROPERTY_TIMESTAMP);
+            String text = (String) entity.getProperty(Comment.PROPERTY_TEXT);
+
+            Comment comment = new Comment(key, timestamp, text);
             comments.add(comment);
         }
 
@@ -63,12 +75,12 @@ public class DataServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String comment = request.getParameter("comment-box");
+        String text = request.getParameter(PARAM_COMMENT_BOX);
         long timestamp = System.currentTimeMillis();
 
-        Entity commentEntity = new Entity(COMMENT_T);
-        commentEntity.setProperty(TIMESTAMP_P, timestamp);
-        commentEntity.setProperty(TEXT_P, comment);
+        Entity commentEntity = new Entity(Comment.KIND);
+        commentEntity.setProperty(Comment.PROPERTY_TIMESTAMP, timestamp);
+        commentEntity.setProperty(Comment.PROPERTY_TEXT, text);
 
         datastore.put(commentEntity);
 
