@@ -24,7 +24,9 @@
       <p>I am a human, probably. </p>
 
       <section>
-          <form id="comment-form" action="/data" method="POST">
+          <p id="login-message">Click <a id="login-url">here</a> to log in.</p>
+          <p id="logout-message" class="gone">Click <a id="logout-url">here</a> to log out.</p>
+          <form id="comment-form" action="/data" method="POST" class="gone">
               <h2>Suggestions &amp; Comments</h2>
               <textarea name="comment-box" cols=50 placeholder="Leave comment or suggestion, or just say hi!"></textarea>
               <button type="submit">Submit</button>

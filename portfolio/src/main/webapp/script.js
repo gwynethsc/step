@@ -50,6 +50,35 @@ function closeSideNav() {
 }
 
 /**
+ * Only displays comment entry form if a user has logged in
+ */
+function checkLogin() {
+    console.log("checking login status");
+
+    fetch("/login").then(response => response.json()).then(result => {
+        let loginMessage = document.getElementById("login-message");
+        let logoutMessage = document.getElementById("logout-message");
+        let commentForm = document.getElementById("comment-form");
+
+        if (result.loggedIn) {
+            console.log("logged in, displaying comment submission form");
+            loginMessage.classList.add("gone");
+            let logoutURL = document.getElementById("logout-url");
+            logoutURL.href = result.logURL;
+            logoutMessage.classList.remove("gone");
+            commentForm.classList.remove("gone");
+        } else {
+            console.log("logged out, requesting login to allow commenting");
+            logoutMessage.classList.add("gone");
+            commentForm.classList.add("gone");
+            let loginURL = document.getElementById("login-url");
+            loginURL.href = result.logURL;
+            loginMessage.classList.remove("gone");
+        }
+    });
+}
+
+/**
  * Fetches a list of comments from the server and adds each to the page
  */
 function loadComments() {
@@ -61,6 +90,8 @@ function loadComments() {
         console.log("received data: " + commentList);
         addComments(commentList);
     });
+
+    checkLogin();
 }
 
 /** 
@@ -87,6 +118,7 @@ function addComments(commentList) {
  */
 function createCommentElement(comment) {
     let commentElement = document.createElement('div');
+    commentElement.userId = comment.userId;
     commentElement.classList.add("comment");
     
     let commentText = document.createElement('p');
@@ -148,6 +180,8 @@ function sendDeletePost(json) {
  * Toggles comment visibility
  */
 function toggleComments() {
+    console.log("toggling comment view");
+
     let comments = document.getElementById("comment-list-container");
     comments.classList.toggle("gone");
 

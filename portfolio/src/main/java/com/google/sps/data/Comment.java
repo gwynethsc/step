@@ -8,14 +8,17 @@ public final class Comment {
     public static final String KIND = "Comment";
     public static final String PROPERTY_TIMESTAMP = "timestamp";
     public static final String PROPERTY_TEXT = "text";
+    public static final String PROPERTY_ID = "userID";
 
     private final String key;
     private final long timestamp;
+    private final String userId;
     private final String text;
 
-    public Comment(String key, long timestamp, String text) {
+    public Comment(String key, long timestamp, String userId, String text) {
         this.key = key;
         this.timestamp = timestamp;
+        this.userId = userId;
         this.text = text;
     }
 }
