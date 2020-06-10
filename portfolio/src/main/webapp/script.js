@@ -64,7 +64,7 @@ function checkLogin() {
             console.log("logged in, displaying comment submission form");
             loginMessage.classList.add("gone");
             let logoutURL = document.getElementById("logout-url");
-            logoutURL.href = result.logURL;
+            logoutURL.href = result.authenticationURL;
             logoutMessage.classList.remove("gone");
             commentForm.classList.remove("gone");
         } else {
@@ -72,7 +72,7 @@ function checkLogin() {
             logoutMessage.classList.add("gone");
             commentForm.classList.add("gone");
             let loginURL = document.getElementById("login-url");
-            loginURL.href = result.logURL;
+            loginURL.href = result.authenticationURL;
             loginMessage.classList.remove("gone");
         }
     });
