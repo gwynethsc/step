@@ -33,7 +33,7 @@
           </form>
           <div id="comment-viewing-container">
               <button id="view-hide-comments" onclick="toggleComments()">Hide Comments</button>
-              <button onclick="deleteAllComments()" class="gone">Delete All Comments</button>
+              <button onclick="deleteAllComments()">Delete All Comments</button>
               <form action="/data" method="POST">
                   <label for="num-comments">Maximum number of comments to display:</label>
                   <select id="num-comments" name="num-comments" onchange="loadComments()">

@@ -51,7 +51,7 @@ public class DeleteDataServlet extends HttpServlet {
         } else { // deleteStyle.equals("all") == true
             String userId = map.get(USER_ID);
             System.out.println(userId);
-            Query query = new Query(Comment.KIND).setFilter(new FilterPredicate("userId", FilterOperator.EQUAL, userId)).setKeysOnly();
+            Query query = new Query(Comment.KIND).setFilter(new FilterPredicate(Comment.PROPERTY_ID, FilterOperator.EQUAL, userId)).setKeysOnly();
             PreparedQuery results = datastore.prepare(query);
             List<Key> keys = new ArrayList<Key>();
             for (Entity entity : results.asIterable()) {

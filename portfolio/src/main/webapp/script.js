@@ -74,7 +74,7 @@ function checkLogin(callback) {
     fetch(SERVLET_LOGIN).then(response => response.json()).then(result => {
         if (result.loggedIn) {
             currentUserId = result.userId;
-            console.log("logged in as" + currentUserId);
+            console.log("logged in as " + currentUserId);
         } else {
             console.log("logged out");
             currentUserId = null;
@@ -117,6 +117,7 @@ function showCommentFormByLoginStatus(result) {
  */
 function loadComments() {
     console.log("fetching comments");
+    checkLogin();
 
     maxNumComments = document.getElementById("num-comments").value;
     console.log("loading up to " + maxNumComments + " comments");
@@ -124,7 +125,6 @@ function loadComments() {
         .then(response => response.json())
         .then(commentList => {
             console.log("received data: " + commentList);
-            checkLogin();
             addComments(commentList);
         });
 }
