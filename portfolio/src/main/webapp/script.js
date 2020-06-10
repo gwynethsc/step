@@ -12,21 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const CLASS_GONE = "gone";
+const CLASS_OFFSCREEN = "off-screen";
+const CLASS_HIDDEN = "hidden";
+
+const SERVLET_LOGIN = "/login";
+const SERVLET_COMMENT = "/data";
+const SERVLET_DELETE = "/delete-data";
+
 var maxNumComments = 5;
 
 /**
- * Adds a random greeting to the page.
+ * Hides HTML element from the page completely; occupies no space
  */
-function addRandomGreeting() {
-  const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
+function hideElement(element) {
+    element.classList.add(CLASS_GONE);
+}
 
-  // Pick a random greeting.
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
-
-  // Add it to the page.
-  const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
+/**
+ * Reveals an existing HTML element if it has been hidden using attribute display: none
+ */
+function showElement(element) {
+    element.classList.remove(CLASS_GONE);
 }
 
 /**
@@ -35,8 +42,8 @@ function addRandomGreeting() {
 function openSideNav() {
     var navBar = document.getElementById("navigation-bar");
     var openNavTab = document.getElementById("navigation-tab");
-    navBar.classList.remove("off-screen");
-    openNavTab.classList.add("hidden");
+    navBar.classList.remove(CLASS_OFFSCREEN);
+    openNavTab.classList.add(CLASS_HIDDEN);
 }
 
 /**
@@ -45,8 +52,8 @@ function openSideNav() {
 function closeSideNav() {
     var navBar = document.getElementById("navigation-bar");
     var openNavTab = document.getElementById("navigation-tab");
-    navBar.classList.add("off-screen");
-    openNavTab.classList.remove("hidden");
+    navBar.classList.add(CLASS_OFFSCREEN);
+    openNavTab.classList.remove(CLASS_HIDDEN);
 }
 
 /**
@@ -55,25 +62,25 @@ function closeSideNav() {
 function checkLogin() {
     console.log("checking login status");
 
-    fetch("/login").then(response => response.json()).then(result => {
+    fetch(SERVLET_LOGIN).then(response => response.json()).then(result => {
         let loginMessage = document.getElementById("login-message");
         let logoutMessage = document.getElementById("logout-message");
         let commentForm = document.getElementById("comment-form");
 
         if (result.loggedIn) {
             console.log("logged in, displaying comment submission form");
-            loginMessage.classList.add("gone");
+            hideElement(loginMessage);
             let logoutURL = document.getElementById("logout-url");
             logoutURL.href = result.authenticationURL;
-            logoutMessage.classList.remove("gone");
-            commentForm.classList.remove("gone");
+            showElement(logoutMessage);
+            showElement(commentForm);
         } else {
             console.log("logged out, requesting login to allow commenting");
-            logoutMessage.classList.add("gone");
-            commentForm.classList.add("gone");
+            hideElement(logoutMessage);
+            hideElement(commentForm);
             let loginURL = document.getElementById("login-url");
             loginURL.href = result.authenticationURL;
-            loginMessage.classList.remove("gone");
+            showElement(loginMessage);
         }
     });
 }
@@ -86,10 +93,12 @@ function loadComments() {
 
     maxNumComments = document.getElementById("num-comments").value;
     console.log(maxNumComments);
-    fetch("/data?num-comments=" + maxNumComments).then(response => response.json()).then(commentList => {
-        console.log("received data: " + commentList);
-        addComments(commentList);
-    });
+    fetch(SERVLET_COMMENT + "?num-comments=" + maxNumComments)
+        .then(response => response.json())
+        .then(commentList => {
+            console.log("received data: " + commentList);
+            addComments(commentList);
+        });
 
     checkLogin();
 }
@@ -167,7 +176,7 @@ function deleteAllComments() {
  * comment operation
  */
 function sendDeletePost(json) {
-    fetch('/delete-data', { 
+    fetch(SERVLET_DELETE, { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -183,7 +192,7 @@ function toggleComments() {
     console.log("toggling comment view");
 
     let comments = document.getElementById("comment-list-container");
-    comments.classList.toggle("gone");
+    comments.classList.toggle(CLASS_GONE);
 
     let view = document.getElementById("view-hide-comments");
     if (view.innerText == "View Comments") {
