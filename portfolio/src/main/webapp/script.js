@@ -13,21 +13,7 @@
 // limitations under the License.
 
 var maxNumComments = 5;
-
-/**
- * Adds a random greeting to the page.
- */
-function addRandomGreeting() {
-  const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
-
-  // Pick a random greeting.
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
-
-  // Add it to the page.
-  const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
-}
+var currentUserId = null;
 
 /**
  * Opens side menu
@@ -50,32 +36,58 @@ function closeSideNav() {
 }
 
 /**
- * Only displays comment entry form if a user has logged in
+ * Load login status, comment form, and comment viewing
  */
-function checkLogin() {
+function loadAll() {
+    checkLogin(showCommentFormByLoginStatus);
+    loadComments();
+}
+
+/**
+ * Refresh login status, with optional callback function
+ */
+function checkLogin(callback) {
     console.log("checking login status");
 
     fetch("/login").then(response => response.json()).then(result => {
-        let loginMessage = document.getElementById("login-message");
-        let logoutMessage = document.getElementById("logout-message");
-        let commentForm = document.getElementById("comment-form");
-
         if (result.loggedIn) {
-            console.log("logged in, displaying comment submission form");
-            loginMessage.classList.add("gone");
-            let logoutURL = document.getElementById("logout-url");
-            logoutURL.href = result.logURL;
-            logoutMessage.classList.remove("gone");
-            commentForm.classList.remove("gone");
+            currentUserId = result.userId;
+            console.log("logged in as" + currentUserId);
         } else {
-            console.log("logged out, requesting login to allow commenting");
-            logoutMessage.classList.add("gone");
-            commentForm.classList.add("gone");
-            let loginURL = document.getElementById("login-url");
-            loginURL.href = result.logURL;
-            loginMessage.classList.remove("gone");
+            console.log("logged out");
+            currentUserId = null;
+        }
+        if (callback) {
+            callback(result);
         }
     });
+}
+
+/** 
+ * Update comment submission display based on login status
+ */
+function showCommentFormByLoginStatus(result) {
+    let loginMessage = document.getElementById("login-message");
+    let logoutMessage = document.getElementById("logout-message");
+    let commentForm = document.getElementById("comment-form");
+
+    if (result.loggedIn) {
+        console.log("displaying comment submission form");
+        loginMessage.classList.add("gone");
+        let loginUser = document.getElementById("login-username");
+        loginUser.innerText = result.userEmail;
+        let logoutURL = document.getElementById("logout-url");
+        logoutURL.href = result.logURL;
+        logoutMessage.classList.remove("gone");
+        commentForm.classList.remove("gone");
+    } else {
+        console.log("requesting login to allow commenting");
+        logoutMessage.classList.add("gone");
+        commentForm.classList.add("gone");
+        let loginURL = document.getElementById("login-url");
+        loginURL.href = result.logURL;
+        loginMessage.classList.remove("gone");
+    }
 }
 
 /**
@@ -85,13 +97,13 @@ function loadComments() {
     console.log("fetching comments");
 
     maxNumComments = document.getElementById("num-comments").value;
-    console.log(maxNumComments);
+    console.log("loading up to " + maxNumComments + " comments");
     fetch("/data?num-comments=" + maxNumComments).then(response => response.json()).then(commentList => {
         console.log("received data: " + commentList);
+        checkLogin();
         addComments(commentList);
     });
 
-    checkLogin();
 }
 
 /** 
@@ -121,15 +133,21 @@ function createCommentElement(comment) {
     commentElement.userId = comment.userId;
     commentElement.classList.add("comment");
     
+    let nickname = document.createElement('p');
+    nickname.innerText = comment.userEmail;
+    commentElement.appendChild(nickname);
+
     let commentText = document.createElement('p');
     commentText.innerText = comment.text;
     commentElement.appendChild(commentText);
 
-    let deleteButton = document.createElement('button');
-    deleteButton.id = comment.key;
-    deleteButton.innerText = "Delete";
-    deleteButton.addEventListener('click', deleteComment);
-    commentElement.appendChild(deleteButton);
+    if (comment.userId === currentUserId) {
+        let deleteButton = document.createElement('button');
+        deleteButton.id = comment.key;
+        deleteButton.innerText = "Delete";
+        deleteButton.addEventListener('click', deleteComment);
+        commentElement.appendChild(deleteButton);
+    }
 
     return commentElement;
 }
@@ -155,8 +173,10 @@ function deleteComment(evt) {
 function deleteAllComments() {
     console.log("deleting all comments");
 
+    checkLogin();
     const data = {
         "delete-style": "all",
+        "user-id": currentUserId
     }
     
     sendDeletePost(data);

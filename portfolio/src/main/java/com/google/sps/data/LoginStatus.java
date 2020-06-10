@@ -5,12 +5,14 @@ package com.google.sps.data;
 public final class LoginStatus {
     
     private final boolean loggedIn;
-    private final String user;
+    private final String userId;
+    private final String userEmail;
     private final String logURL; // login if !loggedIn, else logout URL
 
-    public LoginStatus(boolean loggedIn, String user, String logURL) {
+    public LoginStatus(boolean loggedIn, String userId, String userEmail, String logURL) {
         this.loggedIn = loggedIn;
-        this.user = user;
+        this.userId = userId;
+        this.userEmail = userEmail;
         this.logURL = logURL;
     }
 }
