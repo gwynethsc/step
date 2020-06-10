@@ -54,11 +54,10 @@ public class LoginServlet extends HttpServlet {
         if (userService.isUserLoggedIn()) {
             String userId = userService.getCurrentUser().getUserId();
             String userEmail = userService.getCurrentUser().getEmail();
-            String logoutURL = userService.createLogoutURL("/index.html");
-            loginStatus = new LoginStatus(true, userId, userEmail, logoutURL);
+            loginStatus = new LoginStatus(true, userId, userEmail, "/index.html");
         } else {
             String loginURL = userService.createLoginURL("/index.html");
-            loginStatus = new LoginStatus(false, null, null, loginURL);
+            loginStatus = new LoginStatus(false, null, null, "/index.html");
         }
         
         response.getWriter().println(gson.toJson(loginStatus));

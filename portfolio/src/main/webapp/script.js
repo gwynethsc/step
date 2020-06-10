@@ -12,8 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const CLASS_GONE = "gone";
+const CLASS_OFFSCREEN = "off-screen";
+const CLASS_HIDDEN = "hidden";
+
+const SERVLET_LOGIN = "/login";
+const SERVLET_COMMENT = "/data";
+const SERVLET_DELETE = "/delete-data";
+
 var maxNumComments = 5;
 var currentUserId = null;
+
+/**
+ * Hides HTML element from the page completely; occupies no space
+ */
+function hideElement(element) {
+    element.classList.add(CLASS_GONE);
+}
+
+/**
+ * Reveals an existing HTML element if it has been hidden using attribute display: none
+ */
+function showElement(element) {
+    element.classList.remove(CLASS_GONE);
+}
 
 /**
  * Opens side menu
@@ -21,8 +43,8 @@ var currentUserId = null;
 function openSideNav() {
     var navBar = document.getElementById("navigation-bar");
     var openNavTab = document.getElementById("navigation-tab");
-    navBar.classList.remove("off-screen");
-    openNavTab.classList.add("hidden");
+    navBar.classList.remove(CLASS_OFFSCREEN);
+    openNavTab.classList.add(CLASS_HIDDEN);
 }
 
 /**
@@ -31,8 +53,8 @@ function openSideNav() {
 function closeSideNav() {
     var navBar = document.getElementById("navigation-bar");
     var openNavTab = document.getElementById("navigation-tab");
-    navBar.classList.add("off-screen");
-    openNavTab.classList.remove("hidden");
+    navBar.classList.add(CLASS_OFFSCREEN);
+    openNavTab.classList.remove(CLASS_HIDDEN);
 }
 
 /**
@@ -49,7 +71,7 @@ function loadAll() {
 function checkLogin(callback) {
     console.log("checking login status");
 
-    fetch("/login").then(response => response.json()).then(result => {
+    fetch(SERVLET_LOGIN).then(response => response.json()).then(result => {
         if (result.loggedIn) {
             currentUserId = result.userId;
             console.log("logged in as" + currentUserId);
@@ -73,20 +95,20 @@ function showCommentFormByLoginStatus(result) {
 
     if (result.loggedIn) {
         console.log("displaying comment submission form");
-        loginMessage.classList.add("gone");
+        hideElement(loginMessage);
         let loginUser = document.getElementById("login-username");
         loginUser.innerText = result.userEmail;
         let logoutURL = document.getElementById("logout-url");
-        logoutURL.href = result.logURL;
-        logoutMessage.classList.remove("gone");
-        commentForm.classList.remove("gone");
+        logoutURL.href = result.authenticationURL;
+        showElement(logoutMessage);
+        showElement(commentForm);
     } else {
         console.log("requesting login to allow commenting");
-        logoutMessage.classList.add("gone");
-        commentForm.classList.add("gone");
+        hideElement(logoutMessage);
+        hideElement(commentForm);
         let loginURL = document.getElementById("login-url");
-        loginURL.href = result.logURL;
-        loginMessage.classList.remove("gone");
+        loginURL.href = result.authenticationURL;
+        showElement(loginMessage);
     }
 }
 
@@ -98,12 +120,13 @@ function loadComments() {
 
     maxNumComments = document.getElementById("num-comments").value;
     console.log("loading up to " + maxNumComments + " comments");
-    fetch("/data?num-comments=" + maxNumComments).then(response => response.json()).then(commentList => {
-        console.log("received data: " + commentList);
-        checkLogin();
-        addComments(commentList);
-    });
-
+    fetch(SERVLET_COMMENT + "?num-comments=" + maxNumComments)
+        .then(response => response.json())
+        .then(commentList => {
+            console.log("received data: " + commentList);
+            checkLogin();
+            addComments(commentList);
+        });
 }
 
 /** 
@@ -187,7 +210,7 @@ function deleteAllComments() {
  * comment operation
  */
 function sendDeletePost(json) {
-    fetch('/delete-data', { 
+    fetch(SERVLET_DELETE, { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -203,7 +226,7 @@ function toggleComments() {
     console.log("toggling comment view");
 
     let comments = document.getElementById("comment-list-container");
-    comments.classList.toggle("gone");
+    comments.classList.toggle(CLASS_GONE);
 
     let view = document.getElementById("view-hide-comments");
     if (view.innerText == "View Comments") {
