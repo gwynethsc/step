@@ -37,7 +37,7 @@
               <div class="control-bar">
                   <label>
                       Attach an image: 
-                      <input type="file" name="images">
+                      <input type="file" name="images" multiple>
                   </label>
                   <br>
                   <button type="submit">Submit</button>

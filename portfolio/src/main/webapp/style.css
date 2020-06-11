@@ -169,3 +169,8 @@ textarea:focus {
     border-top: 1px solid var(--color-accent-a);
     padding: 10px 0;
 }
+
+.control-bar {
+    display: flex;
+    justify-content: space-between;
+}
