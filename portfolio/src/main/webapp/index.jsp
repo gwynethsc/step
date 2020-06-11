@@ -1,3 +1,8 @@
+<%@ page import="com.google.appengine.api.blobstore.BlobstoreService" %>
+<%@ page import="com.google.appengine.api.blobstore.BlobstoreServiceFactory" %>
+<% BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+   String uploadUrl = blobstoreService.createUploadUrl("/data"); %>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -10,7 +15,7 @@
   <body onload="loadComments()">
     <div id="navigation-bar" class="left-aligned off-screen">
         <button id="nav-close" onclick="closeSideNav()">&times;</button>
-        <a href="index.html">Home</a>
+        <a href="index.jsp">Home</a>
         <a href="cats.html">Cats</a>
         <a href="pumpkins.html">Pumpkin Carvings</a>
     </div>
@@ -26,10 +31,17 @@
       <section>
           <p id="login-message">Click <a id="login-url">here</a> to log in.</p>
           <p id="logout-message" class="gone">Click <a id="logout-url">here</a> to log out.</p>
-          <form id="comment-form" action="/data" method="POST" class="gone">
+          <form id="comment-form" enctype="multipart/form-data" action="<%= uploadUrl %>" method="POST" class="gone">
               <h2>Suggestions &amp; Comments</h2>
               <textarea name="comment-box" cols=50 placeholder="Leave comment or suggestion, or just say hi!"></textarea>
-              <button type="submit">Submit</button>
+              <div class="control-bar">
+                  <label>
+                      Attach an image: 
+                      <input type="file" name="images">
+                  </label>
+                  <br>
+                  <button type="submit">Submit</button>
+              </div>
           </form>
           <div id="comment-viewing-container">
               <button id="view-hide-comments" onclick="toggleComments()">View Comments</button>

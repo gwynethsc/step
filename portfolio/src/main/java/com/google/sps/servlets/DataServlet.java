@@ -91,6 +91,6 @@ public class DataServlet extends HttpServlet {
         datastore.put(commentEntity);
 
         // Redirect back to main page
-        response.sendRedirect("/index.html");
+        response.sendRedirect("/index.jsp");
     }
 }
