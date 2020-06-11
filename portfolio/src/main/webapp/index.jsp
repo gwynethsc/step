@@ -10,7 +10,7 @@
   <body onload="loadComments()">
     <div id="navigation-bar" class="left-aligned off-screen">
         <button id="nav-close" onclick="closeSideNav()">&times;</button>
-        <a href="index.html">Home</a>
+        <a href="index.jsp">Home</a>
         <a href="cats.html">Cats</a>
         <a href="pumpkins.html">Pumpkin Carvings</a>
     </div>
