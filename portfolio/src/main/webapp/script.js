@@ -82,7 +82,8 @@ function checkLogin(callback) {
         if (callback) {
             callback(result);
         }
-    });
+    })
+    .catch(error => console.error(error.message));
 }
 
 /** 
@@ -122,11 +123,12 @@ function loadComments() {
     maxNumComments = document.getElementById("num-comments").value;
     console.log("loading up to " + maxNumComments + " comments");
     fetch(SERVLET_COMMENT + "?num-comments=" + maxNumComments)
-        .then(response => response.json())
-        .then(commentList => {
-            console.log("received data: " + commentList);
-            addComments(commentList);
-        });
+    .then(response => response.json())
+    .then(commentList => {
+        console.log("received data: " + commentList);
+        addComments(commentList);
+    })
+    .catch(error => console.error(error.message));
 }
 
 /** 
@@ -216,7 +218,9 @@ function sendDeletePost(json) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(json),
-    }).then(response => loadComments());
+    })
+    .then(response => loadComments())
+    .catch(error => console.error(error.message));
 }
 
 /**
