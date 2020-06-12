@@ -8,8 +8,9 @@ public final class Comment {
     public static final String KIND = "Comment";
     public static final String PROPERTY_TIMESTAMP = "timestamp";
     public static final String PROPERTY_ID = "userId";
-    public static final String PROPERTY_EMAIL = "userEmail";
+    public static final String PROPERTY_EMAIL = "email";
     public static final String PROPERTY_TEXT = "text";
+    public static final String PROPERTY_IMAGE = "image";
 
     private final String key;
     private final long timestamp;

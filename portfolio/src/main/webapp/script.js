@@ -19,6 +19,7 @@ const CLASS_HIDDEN = "hidden";
 const SERVLET_LOGIN = "/login";
 const SERVLET_COMMENT = "/data";
 const SERVLET_DELETE = "/delete-data";
+const SERVLET_BLOBSTORE = "/blobstore-upload-url";
 
 var maxNumComments = 5;
 var currentUserId = null;
@@ -61,6 +62,7 @@ function closeSideNav() {
  * Load login status, comment form, and comment viewing
  */
 function loadAll() {
+    setBlobstoreUploadUrl();
     checkLogin(showCommentFormByLoginStatus);
     loadComments();
 }
@@ -82,6 +84,18 @@ function checkLogin(callback) {
         if (callback) {
             callback(result);
         }
+    })
+    .catch(error => console.error(error.message));
+}
+
+/**
+ * Update the comment form action to point to a Blobstore upload URL
+ */
+function setBlobstoreUploadUrl() {
+    let commentForm = document.getElementById("comment-form");
+
+    fetch(SERVLET_BLOBSTORE).then(response => response.text()).then(result => {
+        commentForm.action = result;
     })
     .catch(error => console.error(error.message));
 }
