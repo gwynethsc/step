@@ -25,11 +25,13 @@
 
       <section>
           <p id="login-message">Click <a id="login-url">here</a> to log in.</p>
-          <p id="logout-message" class="gone">Click <a id="logout-url">here</a> to log out.</p>
+          <p id="logout-message" class="gone">Logged in as <span id="username"></span>. Click <a id="logout-url">here</a> to log out.</p>
           <form id="comment-form" action="/data" method="POST" class="gone">
               <h2>Suggestions &amp; Comments</h2>
               <textarea name="comment-box" cols=50 placeholder="Leave comment or suggestion, or just say hi!"></textarea>
-              <button type="submit">Submit</button>
+              <div class="control-bar">
+                  <button type="submit">Submit</button>
+              </div>
           </form>
           <div id="comment-viewing-container">
               <button id="view-hide-comments" onclick="toggleComments()">View Comments</button>

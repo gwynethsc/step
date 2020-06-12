@@ -62,27 +62,33 @@ function closeSideNav() {
 function checkLogin() {
     console.log("checking login status");
 
-    fetch(SERVLET_LOGIN).then(response => response.json()).then(result => {
-        let loginMessage = document.getElementById("login-message");
-        let logoutMessage = document.getElementById("logout-message");
-        let commentForm = document.getElementById("comment-form");
-
-        if (result.loggedIn) {
-            console.log("logged in, displaying comment submission form");
-            hideElement(loginMessage);
-            let logoutURL = document.getElementById("logout-url");
-            logoutURL.href = result.authenticationURL;
-            showElement(logoutMessage);
-            showElement(commentForm);
-        } else {
-            console.log("logged out, requesting login to allow commenting");
-            hideElement(logoutMessage);
-            hideElement(commentForm);
-            let loginURL = document.getElementById("login-url");
-            loginURL.href = result.authenticationURL;
-            showElement(loginMessage);
-        }
+    fetch(SERVLET_LOGIN).then(response => response.json()).then(loginStatus => {
+        showCommentFormByLoginStatus(loginStatus);
     });
+}
+
+function showCommentFormByLoginStatus(loginStatus) {
+    let loginMessage = document.getElementById("login-message");
+    let logoutMessage = document.getElementById("logout-message");
+    let commentForm = document.getElementById("comment-form");
+
+    if (loginStatus.loggedIn) {
+        console.log("logged in, displaying comment submission form");
+        hideElement(loginMessage);
+        let logoutURL = document.getElementById("logout-url");
+        logoutURL.href = loginStatus.authenticationURL;
+        showElement(logoutMessage);
+        let username = document.getElementById("username");
+        username.innerText = loginStatus.userEmail;
+        showElement(commentForm);
+    } else {
+        console.log("logged out, requesting login to allow commenting");
+        hideElement(logoutMessage);
+        hideElement(commentForm);
+        let loginURL = document.getElementById("login-url");
+        loginURL.href = loginStatus.authenticationURL;
+        showElement(loginMessage);
+    }
 }
 
 /**
@@ -130,6 +136,10 @@ function createCommentElement(comment) {
     commentElement.userId = comment.userId;
     commentElement.classList.add("comment");
     
+    let username = document.createElement('p');
+    username.innerText = comment.userEmail;
+    commentElement.appendChild(username);
+
     let commentText = document.createElement('p');
     commentText.innerText = comment.text;
     commentElement.appendChild(commentText);
