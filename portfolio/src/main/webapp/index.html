@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="effects.css">
     <script src="script.js"></script>
   </head>
-  <body onload="loadComments()">
+  <body onload="loadAll()">
     <div id="navigation-bar" class="left-aligned off-screen">
         <button id="nav-close" onclick="closeSideNav()">&times;</button>
         <a href="index.html">Home</a>
@@ -25,7 +25,7 @@
 
       <section>
           <p id="login-message">Click <a id="login-url">here</a> to log in.</p>
-          <p id="logout-message" class="gone">Logged in as <span id="username"></span>. Click <a id="logout-url">here</a> to log out.</p>
+          <p id="logout-message" class="gone">Logged in as <span id="login-username"></span>. Click <a id="logout-url">here</a> to log out.</p>
           <form id="comment-form" action="/data" method="POST" class="gone">
               <h2>Suggestions &amp; Comments</h2>
               <textarea name="comment-box" cols=50 placeholder="Leave comment or suggestion, or just say hi!"></textarea>
@@ -34,7 +34,7 @@
               </div>
           </form>
           <div id="comment-viewing-container">
-              <button id="view-hide-comments" onclick="toggleComments()">View Comments</button>
+              <button id="view-hide-comments" onclick="toggleComments()">Hide Comments</button>
               <button onclick="deleteAllComments()">Delete All Comments</button>
               <form action="/data" method="POST">
                   <label for="num-comments">Maximum number of comments to display:</label>
@@ -46,7 +46,7 @@
                   </select>
               </form>
           </div>
-          <div id="comment-list-container" class="gone"></div>
+          <div id="comment-list-container"></div>
       </section>
     </div>
   </body>

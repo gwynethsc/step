@@ -21,6 +21,7 @@ const SERVLET_COMMENT = "/data";
 const SERVLET_DELETE = "/delete-data";
 
 var maxNumComments = 5;
+var currentUserId = null;
 
 /**
  * Hides HTML element from the page completely; occupies no space
@@ -57,36 +58,56 @@ function closeSideNav() {
 }
 
 /**
- * Only displays comment entry form if a user has logged in
+ * Load login status, comment form, and comment viewing
  */
-function checkLogin() {
+function loadAll() {
+    checkLogin(showCommentFormByLoginStatus);
+    loadComments();
+}
+
+/**
+ * Refresh login status, with optional callback function
+ */
+function checkLogin(callback) {
     console.log("checking login status");
 
-    fetch(SERVLET_LOGIN).then(response => response.json()).then(loginStatus => {
-        showCommentFormByLoginStatus(loginStatus);
+    fetch(SERVLET_LOGIN).then(response => response.json()).then(result => {
+        if (result.loggedIn) {
+            currentUserId = result.userId;
+            console.log("logged in as " + currentUserId);
+        } else {
+            console.log("logged out");
+            currentUserId = null;
+        }
+        if (callback) {
+            callback(result);
+        }
     });
 }
 
-function showCommentFormByLoginStatus(loginStatus) {
+/** 
+ * Update comment submission display based on login status
+ */
+function showCommentFormByLoginStatus(result) {
     let loginMessage = document.getElementById("login-message");
     let logoutMessage = document.getElementById("logout-message");
     let commentForm = document.getElementById("comment-form");
 
-    if (loginStatus.loggedIn) {
-        console.log("logged in, displaying comment submission form");
+    if (result.loggedIn) {
+        console.log("displaying comment submission form");
         hideElement(loginMessage);
+        let loginUser = document.getElementById("login-username");
+        loginUser.innerText = result.userEmail;
         let logoutURL = document.getElementById("logout-url");
-        logoutURL.href = loginStatus.authenticationURL;
+        logoutURL.href = result.authenticationURL;
         showElement(logoutMessage);
-        let username = document.getElementById("username");
-        username.innerText = loginStatus.userEmail;
         showElement(commentForm);
     } else {
-        console.log("logged out, requesting login to allow commenting");
+        console.log("requesting login to allow commenting");
         hideElement(logoutMessage);
         hideElement(commentForm);
         let loginURL = document.getElementById("login-url");
-        loginURL.href = loginStatus.authenticationURL;
+        loginURL.href = result.authenticationURL;
         showElement(loginMessage);
     }
 }
@@ -96,17 +117,16 @@ function showCommentFormByLoginStatus(loginStatus) {
  */
 function loadComments() {
     console.log("fetching comments");
+    checkLogin();
 
     maxNumComments = document.getElementById("num-comments").value;
-    console.log(maxNumComments);
+    console.log("loading up to " + maxNumComments + " comments");
     fetch(SERVLET_COMMENT + "?num-comments=" + maxNumComments)
         .then(response => response.json())
         .then(commentList => {
             console.log("received data: " + commentList);
             addComments(commentList);
         });
-
-    checkLogin();
 }
 
 /** 
@@ -136,19 +156,21 @@ function createCommentElement(comment) {
     commentElement.userId = comment.userId;
     commentElement.classList.add("comment");
     
-    let username = document.createElement('p');
-    username.innerText = comment.userEmail;
-    commentElement.appendChild(username);
+    let nickname = document.createElement('p');
+    nickname.innerText = comment.userEmail;
+    commentElement.appendChild(nickname);
 
     let commentText = document.createElement('p');
     commentText.innerText = comment.text;
     commentElement.appendChild(commentText);
 
-    let deleteButton = document.createElement('button');
-    deleteButton.id = comment.key;
-    deleteButton.innerText = "Delete";
-    deleteButton.addEventListener('click', deleteComment);
-    commentElement.appendChild(deleteButton);
+    if (comment.userId === currentUserId) {
+        let deleteButton = document.createElement('button');
+        deleteButton.id = comment.key;
+        deleteButton.innerText = "Delete";
+        deleteButton.addEventListener('click', deleteComment);
+        commentElement.appendChild(deleteButton);
+    }
 
     return commentElement;
 }
@@ -174,8 +196,10 @@ function deleteComment(evt) {
 function deleteAllComments() {
     console.log("deleting all comments");
 
+    checkLogin();
     const data = {
         "delete-style": "all",
+        "user-id": currentUserId
     }
     
     sendDeletePost(data);
