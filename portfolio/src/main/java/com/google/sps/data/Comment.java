@@ -17,12 +17,14 @@ public final class Comment {
     private final String userId;
     private final String userEmail;
     private final String text;
+    private final String imageUrl;
 
-    public Comment(String key, long timestamp, String userId, String userEmail, String text) {
+    public Comment(String key, long timestamp, String userId, String userEmail, String text, String imageUrl) {
         this.key = key;
         this.timestamp = timestamp;
         this.userId = userId;
         this.userEmail = userEmail;
         this.text = text;
+        this.imageUrl = imageUrl;
     }
 }

@@ -164,7 +164,7 @@ function addComments(commentList) {
 /**
  * Creates a single delete-able comment element
  *
- * @param comment a comment object with id and text fields
+ * @param comment a comment object with id, email, text, and image fields
  * @return a comment div to be added to a list of comments
  */
 function createCommentElement(comment) {
@@ -180,6 +180,8 @@ function createCommentElement(comment) {
     commentText.innerText = comment.text;
     commentElement.appendChild(commentText);
 
+    commentElement.appendChild(createImageList(comment)); // TODO: add only if there are any images
+
     if (comment.userId === currentUserId) {
         let deleteButton = document.createElement('button');
         deleteButton.id = comment.key;
@@ -189,6 +191,26 @@ function createCommentElement(comment) {
     }
 
     return commentElement;
+}
+
+/**
+ * Creates a simple gallery of image thumbnail links
+ * TODO: enable upload and diplay of multiple images
+ *
+ * @param comment a comment object with an imageUrl field
+ * @return an image list div
+ */
+function createImageList(comment) {
+    let imageListElement = document.createElement('div');
+
+    if (comment.imageUrl) {
+        let imageElement = document.createElement('img');
+        imageElement.src = comment.imageUrl;
+        imageElement.classList.add("image-thumbnail")
+        imageListElement.appendChild(imageElement);
+    }
+
+    return imageListElement;
 }
 
 /**
