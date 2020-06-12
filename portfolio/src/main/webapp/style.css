@@ -174,3 +174,7 @@ textarea:focus {
     display: flex;
     justify-content: space-between;
 }
+
+.image-thumbnail {
+    max-width: 20%;
+    max-height: 20%;

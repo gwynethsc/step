@@ -204,10 +204,14 @@ function createImageList(comment) {
     let imageListElement = document.createElement('div');
 
     if (comment.imageUrl) {
+        let imageLink = document.createElement('a');
+        imageLink.href = comment.imageUrl;
         let imageElement = document.createElement('img');
         imageElement.src = comment.imageUrl;
         imageElement.classList.add("image-thumbnail")
-        imageListElement.appendChild(imageElement);
+        
+        imageLink.appendChild(imageElement);
+        imageListElement.appendChild(imageLink);
     }
 
     return imageListElement;
