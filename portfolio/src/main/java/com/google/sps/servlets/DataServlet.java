@@ -21,6 +21,7 @@ import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.ImagesServiceFailureException;
 import com.google.appengine.api.images.ServingUrlOptions;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -141,13 +142,21 @@ public class DataServlet extends HttpServlet {
         ImagesService imagesService = ImagesServiceFactory.getImagesService();
         ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
 
+        imagesService.deleteServingUrl(blobKey);
+        String servingUrl;
+        try {
+            servingUrl = imagesService.getServingUrl(options);
+        } catch (ImagesServiceFailureException e) {
+            return "/serve?blob-key=" + blobKey.getKeyString();
+        }
+
         // To support running in Google Cloud Shell with AppEngine's devserver, we must use the relative
         // path to the image, rather than the path returned by imagesService which contains a host.
         try {
-            URL url = new URL(imagesService.getServingUrl(options));
+            URL url = new URL(servingUrl);
             return url.getPath();
         } catch (MalformedURLException e) {
-            return imagesService.getServingUrl(options);
+            return servingUrl;
         }
     }
 }
