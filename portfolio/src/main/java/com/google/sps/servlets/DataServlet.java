@@ -142,6 +142,7 @@ public class DataServlet extends HttpServlet {
         ImagesService imagesService = ImagesServiceFactory.getImagesService();
         ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
 
+        // Use Blobstore-only serving if getServingUrl fails
         imagesService.deleteServingUrl(blobKey);
         String servingUrl;
         try {
