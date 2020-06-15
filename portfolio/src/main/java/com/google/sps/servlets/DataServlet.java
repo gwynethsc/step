@@ -37,6 +37,7 @@ import com.google.sps.data.Comment;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import javax.annotation.Nullable;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -60,6 +61,8 @@ public class DataServlet extends HttpServlet {
     private static final Gson gson = new Gson();
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     private static final UserService userService = UserServiceFactory.getUserService();
+    private static final BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+    private static final ImagesService imagesService = ImagesServiceFactory.getImagesService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -115,8 +118,8 @@ public class DataServlet extends HttpServlet {
     /** 
      * Returns a URL that points to the uploaded file, or null if the user didn't upload a file. 
      */
+    @Nullable
     private String getUploadedFileUrl(HttpServletRequest request, String formInputElementName) {
-        BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
         Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
         List<BlobKey> blobKeys = blobs.get(formInputElementName);
 
@@ -139,11 +142,9 @@ public class DataServlet extends HttpServlet {
         // https://stackoverflow.com/q/10779564/873165
 
         // Use ImagesService to get a URL that points to the uploaded file.
-        ImagesService imagesService = ImagesServiceFactory.getImagesService();
         ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
 
         // Use Blobstore-only serving if getServingUrl fails
-        imagesService.deleteServingUrl(blobKey);
         String servingUrl;
         try {
             servingUrl = imagesService.getServingUrl(options);

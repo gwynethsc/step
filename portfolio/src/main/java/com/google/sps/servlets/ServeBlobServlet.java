@@ -12,11 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/serve")
 public class ServeBlobServlet extends HttpServlet {
 
+    private static final String PROPERTY_BLOBKEY = "blob-key";
+
     private static final BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        BlobKey blobKey = new BlobKey(request.getParameter("blob-key"));
+        BlobKey blobKey = new BlobKey(request.getParameter(PROPERTY_BLOBKEY));
         blobstoreService.serve(blobKey, response);
     }
 }

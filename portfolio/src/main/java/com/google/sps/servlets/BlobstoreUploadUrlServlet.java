@@ -25,12 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/blobstore-upload-url")
 public class BlobstoreUploadUrlServlet extends HttpServlet {
 
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-    String uploadUrl = blobstoreService.createUploadUrl("/data");
+    private static final BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 
-    response.setContentType("text/html");
-    response.getWriter().println(uploadUrl);
-  }
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      response.setContentType("text/html");
+      response.getWriter().println(blobstoreService.createUploadUrl("/data"));
+    }
 }
