@@ -3,13 +3,14 @@ package com.google.sps.servlets;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.sps.data.Constants;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/serve")
+@WebServlet(Constants.SERVLET_SERVE_BLOB)
 public class ServeBlobServlet extends HttpServlet {
 
     private static final String PROPERTY_BLOBKEY = "blob-key";

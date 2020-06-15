@@ -25,6 +25,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.sps.data.Comment;
+import com.google.sps.data.Constants;
 import com.google.sps.data.LoginStatus;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -39,7 +40,7 @@ import java.util.List;
 /**
  * Servlet that checks user login status
  */
-@WebServlet("/login")
+@WebServlet(Constants.SERVLET_LOGIN)
 public class LoginServlet extends HttpServlet {
 
     private static final Gson gson = new Gson();
@@ -54,9 +55,9 @@ public class LoginServlet extends HttpServlet {
         if (userService.isUserLoggedIn()) {
             String userId = userService.getCurrentUser().getUserId();
             String userEmail = userService.getCurrentUser().getEmail();
-            loginStatus = new LoginStatus(true, userId, userEmail, "/index.html");
+            loginStatus = new LoginStatus(true, userId, userEmail, Constants.PAGE_INDEX);
         } else {
-            loginStatus = new LoginStatus(false, null, null, "/index.html");
+            loginStatus = new LoginStatus(false, null, null, Constants.PAGE_INDEX);
         }
         
         response.getWriter().println(gson.toJson(loginStatus));

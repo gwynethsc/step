@@ -34,6 +34,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.sps.data.Comment;
+import com.google.sps.data.Constants;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -51,12 +52,13 @@ import java.util.Map;
 /**
  * Servlet that stores and returns visitor comments
  */
-@WebServlet("/data")
+@WebServlet(Constants.SERVLET_DATA)
 public class DataServlet extends HttpServlet {
 
     private static final int NUM_COMMENTS_DEFAULT = 1;
     private static final String PARAM_NUM_COMMENTS = "num-comments";
     private static final String PARAM_COMMENT_BOX = "comment-box";
+    private static final String IMAGE_INPUT_NAME = "image";
 
     private static final Gson gson = new Gson();
     private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -100,7 +102,7 @@ public class DataServlet extends HttpServlet {
         long timestamp = System.currentTimeMillis();
         String userId = userService.getCurrentUser().getUserId();
         String userEmail = userService.getCurrentUser().getEmail();
-        String imageUrl = getUploadedFileUrl(request, "image");
+        String imageUrl = getUploadedFileUrl(request, IMAGE_INPUT_NAME);
 
         Entity commentEntity = new Entity(Comment.KIND);
         commentEntity.setProperty(Comment.PROPERTY_TIMESTAMP, timestamp);
@@ -112,7 +114,7 @@ public class DataServlet extends HttpServlet {
         datastore.put(commentEntity);
 
         // Redirect back to main page
-        response.sendRedirect("/index.html");
+        response.sendRedirect(Constants.PAGE_INDEX);
     }
 
     /** 
@@ -149,7 +151,7 @@ public class DataServlet extends HttpServlet {
         try {
             servingUrl = imagesService.getServingUrl(options);
         } catch (ImagesServiceFailureException e) {
-            return "/serve?blob-key=" + blobKey.getKeyString();
+            return Constants.SERVLET_SERVE_BLOB + "?blob-key=" + blobKey.getKeyString();
         }
 
         // To support running in Google Cloud Shell with AppEngine's devserver, we must use the relative
