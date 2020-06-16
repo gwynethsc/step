@@ -19,6 +19,7 @@ const CLASS_HIDDEN = "hidden";
 const SERVLET_LOGIN = "/login";
 const SERVLET_COMMENT = "/data";
 const SERVLET_DELETE = "/delete-data";
+const SERVLET_BLOBSTORE = "/blobstore-upload-url";
 
 var maxNumComments = 5;
 var currentUserId = null;
@@ -61,6 +62,7 @@ function closeSideNav() {
  * Load login status, comment form, and comment viewing
  */
 function loadAll() {
+    setBlobstoreUploadUrl();
     checkLogin(showCommentFormByLoginStatus);
     loadComments();
 }
@@ -82,7 +84,20 @@ function checkLogin(callback) {
         if (callback) {
             callback(result);
         }
-    });
+    })
+    .catch(error => console.error(error.message));
+}
+
+/**
+ * Update the comment form action to point to a Blobstore upload URL
+ */
+function setBlobstoreUploadUrl() {
+    let commentForm = document.getElementById("comment-form");
+
+    fetch(SERVLET_BLOBSTORE).then(response => response.text()).then(result => {
+        commentForm.action = result;
+    })
+    .catch(error => console.error(error.message));
 }
 
 /** 
@@ -122,11 +137,12 @@ function loadComments() {
     maxNumComments = document.getElementById("num-comments").value;
     console.log("loading up to " + maxNumComments + " comments");
     fetch(SERVLET_COMMENT + "?num-comments=" + maxNumComments)
-        .then(response => response.json())
-        .then(commentList => {
-            console.log("received data: " + commentList);
-            addComments(commentList);
-        });
+    .then(response => response.json())
+    .then(commentList => {
+        console.log("received data: " + commentList);
+        addComments(commentList);
+    })
+    .catch(error => console.error(error.message));
 }
 
 /** 
@@ -148,7 +164,7 @@ function addComments(commentList) {
 /**
  * Creates a single delete-able comment element
  *
- * @param comment a comment object with id and text fields
+ * @param comment a comment object with id, email, text, and image fields
  * @return a comment div to be added to a list of comments
  */
 function createCommentElement(comment) {
@@ -164,6 +180,8 @@ function createCommentElement(comment) {
     commentText.innerText = comment.text;
     commentElement.appendChild(commentText);
 
+    commentElement.appendChild(createImageList(comment)); // TODO: add only if there are any images
+
     if (comment.userId === currentUserId) {
         let deleteButton = document.createElement('button');
         deleteButton.id = comment.key;
@@ -173,6 +191,30 @@ function createCommentElement(comment) {
     }
 
     return commentElement;
+}
+
+/**
+ * Creates a simple gallery of image thumbnail links
+ * TODO: enable upload and diplay of multiple images
+ *
+ * @param comment a comment object with an imageUrl field
+ * @return an image list div
+ */
+function createImageList(comment) {
+    let imageListElement = document.createElement('div');
+
+    if (comment.imageUrl) {
+        let imageLink = document.createElement('a');
+        imageLink.href = comment.imageUrl;
+        let imageElement = document.createElement('img');
+        imageElement.src = comment.imageUrl;
+        imageElement.classList.add("image-thumbnail")
+        
+        imageLink.appendChild(imageElement);
+        imageListElement.appendChild(imageLink);
+    }
+
+    return imageListElement;
 }
 
 /**
@@ -216,7 +258,9 @@ function sendDeletePost(json) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(json),
-    }).then(response => loadComments());
+    })
+    .then(response => loadComments())
+    .catch(error => console.error(error.message));
 }
 
 /**

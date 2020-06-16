@@ -19,7 +19,7 @@ public final class LoginStatus {
      *
      * @param loggedIn      true if a user is logged in, else false
      * @param userId        a unique String identifying the user, if logged in; else null
-     * @param userEmail     
+     * @param userEmail
      * @param redirectURL   the URL to be redirected to after logging in or out
      */
     public LoginStatus(boolean loggedIn, String userId, String userEmail, String redirectURL) {

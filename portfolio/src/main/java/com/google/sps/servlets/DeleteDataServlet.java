@@ -13,6 +13,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.Gson;
 import com.google.common.reflect.TypeToken;
 import com.google.sps.data.Comment;
+import com.google.sps.data.Constants;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,7 +27,7 @@ import java.lang.reflect.Type;
 /**
  * Servlet that deletes visitor comments
  */
-@WebServlet("/delete-data")
+@WebServlet(Constants.SERVLET_DELETE)
 public class DeleteDataServlet extends HttpServlet {
 
     private static final String DELETE_STYLE = "delete-style";
