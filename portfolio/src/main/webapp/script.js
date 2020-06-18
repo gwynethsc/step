@@ -67,13 +67,31 @@ function loadAll() {
     loadComments();
 }
 
+/** Wrap setTimeout in a Promise */
+const wait = duration => new Promise(resolve => setTimeout(resolve, duration));
+
+/**
+ * Upon failure, retry a function that returns a Promise up to a set number of times, 
+ * with an exponentially increasing delay after each failure
+ */
+function backoff(tries, fn, delay = 500) {
+    return fn().catch(error => {
+        if (tries > 1) {
+            console.log("retrying: " + (tries - 1) + " left");
+            return wait(delay).then(() => backoff(tries - 1, fn, delay * 2));
+        } else {
+            return Promise.reject(error);
+        }
+    });
+}
+
 /**
  * Refresh login status, with optional callback function
  */
 function checkLogin(callback) {
     console.log("checking login status");
 
-    fetch(SERVLET_LOGIN).then(response => response.json()).then(result => {
+    const fn = () => fetch(SERVLET_LOGIN).then(response => response.json()).then(result => {
         if (result.loggedIn) {
             currentUserId = result.userId;
             console.log("logged in as " + currentUserId);
@@ -84,8 +102,12 @@ function checkLogin(callback) {
         if (callback) {
             callback(result);
         }
-    })
-    .catch(error => console.error(error.message));
+    });
+    backoff(3, fn).catch(error => {
+        console.error(error.message)
+        console.log("could not verify login status");
+        currentUserId = null;
+    });
 }
 
 /**
@@ -136,13 +158,14 @@ function loadComments() {
 
     maxNumComments = document.getElementById("num-comments").value;
     console.log("loading up to " + maxNumComments + " comments");
-    fetch(SERVLET_COMMENT + "?num-comments=" + maxNumComments)
-    .then(response => response.json())
-    .then(commentList => {
-        console.log("received data: " + commentList);
-        addComments(commentList);
-    })
-    .catch(error => console.error(error.message));
+
+    const fn = () => fetch(SERVLET_COMMENT + "?num-comments=" + maxNumComments)
+        .then(response => response.json())
+        .then(commentList => {
+            console.log("received data: " + commentList);
+            addComments(commentList);
+        });
+    backoff(3, fn).catch(error => console.error(error.message));
 }
 
 /** 
