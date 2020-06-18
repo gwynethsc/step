@@ -22,91 +22,88 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+/**
+ * FindMeetingQuery contains a query method that finds the best possible open meeting times, if any,
+ * given existing events and a request
+ */
 public final class FindMeetingQuery {
 
-    public enum AvailabilityChangeType {
+    private enum AvailabilityChangeType {
         START, END
     }
 
     private static class AvailabilityChange {
         private final AvailabilityChangeType type;
-        private final int point;
-        private final Set<String> attendees = new HashSet<>();
+        private final int timestamp;
+        private final Set<String> attendees;
 
         public AvailabilityChange(AvailabilityChangeType type, TimeRange when, Collection<String> attendees) {
             if (when == null) {
-              throw new IllegalArgumentException("when cannot be null.");
+                throw new IllegalArgumentException("when cannot be null.");
             }
+
             if (attendees == null) {
-              throw new IllegalArgumentException("attendees cannot be null. Use empty array instead.");
+                this.attendees = Collections.unmodifiableSet(new HashSet<>());
+            } else {
+                this.attendees = Collections.unmodifiableSet(new HashSet<>(attendees));
             }
+
             this.type = type;
             if (type == AvailabilityChangeType.START) {
-                this.point = when.start();
+                this.timestamp = when.start();
             }
             else {
-                this.point = when.end();
+                this.timestamp = when.end();
             }
-            this.attendees.addAll(attendees);
         }
 
         public AvailabilityChangeType type() {
             return type;
         }
 
-        public int point() {
-            return point;
+        public int timestamp() {
+            return timestamp;
         }
 
         public Set<String> getAttendees() {
-            return Collections.unmodifiableSet(attendees);
+            return attendees;
         }
 
-        public static final Comparator<AvailabilityChange> ORDER = new Comparator<AvailabilityChange>() {
-            @Override
-            public int compare(AvailabilityChange a, AvailabilityChange b) {
-              return Long.compare(a.point, b.point);
-            }
-        };
+        public static final Comparator<AvailabilityChange> ORDER = 
+            (AvailabilityChange a, AvailabilityChange b) -> Long.compare(a.timestamp, b.timestamp);
     }
 
     /**
      * Given a collection of existing events and a meeting request, returns a list of all
      * time ranges with at least the duration of the request in which all mandatory attendees 
      * are available
+     *
+     * @param events a collection of preexisting meeting events
+     * @param request specifies the meeting to be scheduled
+     *
+     * @return all time ranges that are sufficiently long for the meeting request and during which all
+     *         mandatory attendees are available
      */
     public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
 
-        // Convert existing events to a list of availability changes
-        List<AvailabilityChange> changes = new ArrayList<AvailabilityChange>();
-        for (Event event : events) {
-            changes.add(new AvailabilityChange(AvailabilityChangeType.START, event.getWhen(), event.getAttendees()));
-            changes.add(new AvailabilityChange(AvailabilityChangeType.END, event.getWhen(), event.getAttendees()));
-        }
-        Collections.sort(changes, AvailabilityChange.ORDER);
+        List<AvailabilityChange> changes = getChangesInAvailabilityFromEvents(events);
 
-        Set<String> occupied = new HashSet<String>();
+        Set<String> currentAttendees = new HashSet<String>();
         List<TimeRange> openings = new ArrayList<TimeRange>();
         int slotStart = 0;
         for (AvailabilityChange change : changes) {
 
-            Set<String> mandatoryAttendees = new HashSet<String>(request.getAttendees());
-            mandatoryAttendees.retainAll(change.getAttendees());
-            
-            if (change.type() == AvailabilityChangeType.START) {
-                occupied.addAll(mandatoryAttendees);
-            } else {
-                occupied.removeAll(mandatoryAttendees);
-            }
+            Collection<String> consideredAttendees = request.getAttendees();
+            applyAvailabilityChange(currentAttendees, change, consideredAttendees);
             
             // Use change information to open or close a new potential slot, if applicable
-            if (slotStart >= 0 && !occupied.isEmpty()) {
-                TimeRange openSlot = TimeRange.fromStartEnd(slotStart, change.point(), false);
+            if (slotStart >= 0 && !currentAttendees.isEmpty()) {
+                TimeRange openSlot = TimeRange.fromStartEnd(slotStart, change.timestamp(), false);
                 if (openSlot.duration() >= request.getDuration())
                     openings.add(openSlot);
                 slotStart = -1;
-            } else if (slotStart < 0 && occupied.isEmpty()) {
-                slotStart = change.point();
+            } else if (slotStart < 0 && currentAttendees.isEmpty()) {
+                slotStart = change.timestamp();
             }
         }
 
@@ -118,5 +115,33 @@ public final class FindMeetingQuery {
         }
 
         return openings;
+    }
+
+    private List<AvailabilityChange> getChangesInAvailabilityFromEvents(Collection<Event> events) {
+        List<AvailabilityChange> changes = new ArrayList<AvailabilityChange>();
+        for (Event event : events) {
+            changes.add(new AvailabilityChange(AvailabilityChangeType.START, event.getWhen(), event.getAttendees()));
+            changes.add(new AvailabilityChange(AvailabilityChangeType.END, event.getWhen(), event.getAttendees()));
+        }
+        Collections.sort(changes, AvailabilityChange.ORDER);
+        return changes;
+    }
+
+    /**
+     * In-place modification of a set of attendees to reflect a change in availability change
+     *
+     * @param currentAttendees
+     * @param change
+     * @param consideredAttendees
+     */
+    private void applyAvailabilityChange(Set<String> currentAttendees, AvailabilityChange change, Collection<String> consideredAttendees) {
+        Set<String> changeAttendees = new HashSet<String>(consideredAttendees);
+        changeAttendees.retainAll(change.getAttendees());
+
+        if (change.type() == AvailabilityChangeType.START) {
+            currentAttendees.addAll(changeAttendees);
+        } else {
+            currentAttendees.removeAll(changeAttendees);
+        }
     }
 }
