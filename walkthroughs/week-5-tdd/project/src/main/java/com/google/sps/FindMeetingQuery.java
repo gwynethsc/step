@@ -85,6 +85,21 @@ public final class FindMeetingQuery {
      *         mandatory attendees are available
      */
     public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
+        Collection<TimeRange> withOptional = query(events, request, true);
+        if (!withOptional.isEmpty() || request.getAttendees().isEmpty()) {
+            return withOptional;
+        }
+        return query(events, request, false);
+    }
+
+    /**
+     * query with additional parameter on whether or not to consider optional attendees
+     */
+    private Collection<TimeRange> query(Collection<Event> events, MeetingRequest request, boolean considerOptionalAttendees) {
+        Set<String> consideredAttendees = new HashSet<String>(request.getAttendees());
+        if (considerOptionalAttendees) {
+            consideredAttendees.addAll(request.getOptionalAttendees());
+        }
 
         List<AvailabilityChange> changes = getChangesInAvailabilityFromEvents(events);
 
@@ -92,8 +107,6 @@ public final class FindMeetingQuery {
         List<TimeRange> meetingOptions = new ArrayList<TimeRange>();
         int slotStart = 0;
         for (AvailabilityChange change : changes) {
-
-            Collection<String> consideredAttendees = request.getAttendees();
             applyAvailabilityChange(currentAttendees, change, consideredAttendees);
             
             // Use change information to open or close a new potential slot, as applicable
